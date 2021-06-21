@@ -88,7 +88,6 @@ function ToDo(props) {
             list={list}
             handleComplete={toggleComplete}
             delete={deleteItem}
-            // edit={editItem}
             handlerPopSubmit={editItem}
           />
         </div>
