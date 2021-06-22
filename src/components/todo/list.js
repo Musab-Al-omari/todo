@@ -1,18 +1,16 @@
 import React from 'react';
-
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
-
+import Toast from 'react-bootstrap/Toast'
+import Badge from 'react-bootstrap/Badge'
 import { useState } from 'react';
-
-
 
 
 function TodoList(props) {
 
   const [show, setShow] = useState(false);
-  let [item, setItem] = useState({});
+  const [item, setItem] = useState({});
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
@@ -27,31 +25,49 @@ function TodoList(props) {
   const handleInputChange = e => {
     setItem({ ...item, [e.target.name]: e.target.value })
   };
-  // console.log(item);
 
   const handlerPopSubmit = (e) => {
     e.preventDefault();
     e.target.reset();
     handleClose();
-    // console.log(item);
     props.handlerPopSubmit(item);
-    // setItem(item);
   };
 
+
+// const sortList= props.list
 
   return (
     <>
       <ul>
         {props.list.map(item => (
-          <li
+          <Toast
+            onClose={() => props.delete(item._id)}
             className={`complete-${item.complete.toString()}`}
             key={item._id}
           >
-            <span onClick={() => props.handleComplete(item._id)}>
-              {item.text}
-            </span>
-            {/* <button onClick={() => props.editItem(item._id)}>EDIT</button> */}
-            <button onClick={() => props.delete(item._id)}>delete</button>
+
+            <Toast.Header>
+              <img
+                src="holder.js/20x20?text=%20"
+                className="rounded mr-2"
+                alt=""
+              />
+              <Badge
+              style={{ cursor: 'pointer' }}
+              className="mr-auto m-1"
+              onClick={() => props.handleComplete(item._id)}
+              size="sm"
+              pill
+              variant={`${item.complete ? 'success' : 'danger'}`}
+            >{`${item.complete ? 'completed' : 'pending'}`}</Badge>
+              <strong className="mr-auto">{item.assignee}</strong>
+            </Toast.Header>
+
+
+            <Toast.Body onClick={() => props.handleComplete(item._id)}>{item.text}
+           
+            </Toast.Body>
+            <small>difficulty: {item.difficulty}</small>
 
             <Button variant="primary" onClick={() => {
               handleEdit(item)
@@ -59,7 +75,7 @@ function TodoList(props) {
               edit
             </Button>
 
-          </li>
+          </Toast>
         ))}
       </ul>
       <Modal show={show} onHide={handleClose} animation={false}>
@@ -104,3 +120,4 @@ function TodoList(props) {
 
 
 export default TodoList;
+

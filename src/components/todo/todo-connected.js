@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import TodoForm from './form.js';
 import TodoList from './list.js';
-
+import Pagination from './Pagination.js'
 import './todo.scss';
+import SelectD from '../select.js';
 
 const todoAPI = 'https://api-js401.herokuapp.com/api/v1/todo';
 
@@ -10,6 +11,15 @@ const todoAPI = 'https://api-js401.herokuapp.com/api/v1/todo';
 const ToDo = () => {
 
   const [list, setList] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage] = useState(3);
+  // const []
+
+
+  const paginate = pageNumber => setCurrentPage(pageNumber);
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentList = list.slice(indexOfFirstPost, indexOfLastPost);
 
 
   const _addItem = (item) => {
@@ -28,9 +38,6 @@ const ToDo = () => {
       })
       .catch(console.error);
   };
-
-
-
 
   const _toggleComplete = id => {
 
@@ -54,10 +61,6 @@ const ToDo = () => {
     }
   };
 
-
-
-
-
   const _getTodoItems = () => {
 
     fetch(todoAPI, {
@@ -70,8 +73,6 @@ const ToDo = () => {
   };
 
   useEffect(_getTodoItems, []);
-
-
 
   // will run every time the list change 
   useEffect(() => {
@@ -149,34 +150,49 @@ const ToDo = () => {
         .catch(console.error);
     }
   }
+  const sortByDifficulty=(diff)=>{
+    // console.log(currentList);
+    // console.log(diff);
+    currentList.sort(obj=>{
+      return obj.difficulty>diff
+    })
+    // console.log(currentList);
+
+  }
 
 
 
 
   return (
     <>
+
       <header>
         <h2>
           There are {list.filter(item => !item.complete).length} Items To Complete
         </h2>
       </header>
-
       <section className="todo">
-
         <div>
           <TodoForm handleSubmit={_addItem} />
+          <SelectD handleDifficulty={sortByDifficulty}/>
         </div>
-
         <div>
           <TodoList
-            list={list}
+            list={currentList}
             handleComplete={_toggleComplete}
             delete={deleteItem}
             handlerPopSubmit={editItem}
           />
         </div>
       </section>
+      <Pagination
+        postsPerPage={postsPerPage}
+        totalPosts={list.length}
+        paginate={paginate}
+      />
     </>
+
+
   );
 };
 
